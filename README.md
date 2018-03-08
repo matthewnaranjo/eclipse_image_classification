@@ -1,21 +1,35 @@
 # Overview
 
-This repo contains code for the "TensorFlow for poets 2" series of codelabs.
+This repo contains code adapted from the "TensorFlow for poets 2" series of codelabs.
 
-There are multiple versions of this codelab depending on which version 
-of the tensorflow libraries you plan on using:
+The code is modified to accomodate running a directory with thousands of images and exporting the results to a csv. 
 
-* For [TensorFlow Lite](https://www.tensorflow.org/mobile/tflite/) the new, ground up rewrite targeted at mobile devices
-  use [this version of the codelab](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets-2-tflite) 
-* For the more mature [TensorFlow Mobile](https://www.tensorflow.org/mobile/mobile_intro) use 
-  [this version of the codealab](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets-2).
+## eclipse_image_classification
 
+(Re)Training the Model:
 
-This repo contains simplified and trimmed down version of tensorflow's example image classification apps.
+  Specify Architecture and Image Size:
 
-* The TensorFlow Lite version, in `android/tflite`, comes from [tensorflow/contrib/lite/](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/lite).
-* The Tensorflow Mobile version, in `android/tfmobile`, comes from [tensorflow/examples/android/](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android).
+  IMAGE_SIZE=224
+  ARCHITECTURE="mobilenet_0.50_${IMAGE_SIZE}"
 
-The `scripts` directory contains helpers for the codelab. Some of these come from the main TensorFlow repository, and are included here so you can use them without also downloading the main TensorFlow repo (they are not part of the TensorFlow `pip` installation).
+  Run training script:
 
-# eclipse_image_classification
+  python -m scripts.retrain \
+    --bottleneck_dir=tf_files/bottlenecks \
+    --model_dir=tf_files/models/"${ARCHITECTURE}" \
+    --summaries_dir=tf_files/training_summaries/"${ARCHITECTURE}" \
+    --output_graph=tf_files/retrained_graph.pb \
+    --output_labels=tf_files/retrained_labels.txt \
+    --architecture="${ARCHITECTURE}" \
+    --image_dir=[PATH/TO/TRAINING_DATA]
+
+To run classification on directory for .jpg images use command:
+
+python -m scripts.label_image \
+    --graph=tf_files/retrained_graph.pb  \
+    --dir=[PATH/TO/DIRECTORY]
+   
+Once the script receives the path to the directory, it will grab all images of the .jpg type and classify them accoring to the model.
+
+Once all images in the directory are run, the program will export a .csv file to the current directory.
