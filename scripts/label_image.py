@@ -27,6 +27,8 @@ import tensorflow as tf
 import os
 import pandas as pd
 
+import urllib
+
 def load_graph(model_file):
   graph = tf.Graph()
   graph_def = tf.GraphDef()
@@ -39,10 +41,14 @@ def load_graph(model_file):
   return graph
 
 def read_tensor_from_image_file(file_name, input_height=299, input_width=299,
-				input_mean=0, input_std=255):
-  input_name = "file_reader"
-  output_name = "normalized"
-  file_reader = tf.read_file(file_name, input_name)
+				input_mean=0, input_std=255, r=False):
+  if not r:
+    input_name = "file_reader"
+    output_name = "normalized"
+    file_reader = tf.read_file(file_name, input_name)
+  else:
+    # Open specified url and load image as a string
+    file_reader = urllib.request.urlopen(file_name).read()
   if file_name.endswith(".png"):
     image_reader = tf.image.decode_png(file_reader, channels = 3,
                                        name='png_reader')
@@ -92,6 +98,7 @@ if __name__ == "__main__":
   parser.add_argument("--input_layer", help="name of input layer")
   parser.add_argument("--output_layer", help="name of output layer")
   parser.add_argument("--dir", help="boolean, is directory")
+  parser.add_argument("--r", help="boolean, is url")
   args = parser.parse_args()
 
   if args.graph:
@@ -112,6 +119,10 @@ if __name__ == "__main__":
     input_layer = args.input_layer
   if args.output_layer:
     output_layer = args.output_layer
+  if args.r:
+    isURL = True
+  else:
+    isURL = False
 
   multiple_images = False
   files = []
@@ -128,7 +139,8 @@ if __name__ == "__main__":
                                     input_height=input_height,
                                     input_width=input_width,
                                     input_mean=input_mean,
-                                    input_std=input_std)
+                                    input_std=input_std,
+                                    r = isURL)
 
     input_name = "import/" + input_layer
     output_name = "import/" + output_layer
