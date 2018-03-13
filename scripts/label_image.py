@@ -121,8 +121,8 @@ if __name__ == "__main__":
     for filename in os.listdir(search_dir):
       files.append(search_dir + filename)
 
+  ## single image classification
   if not files:
-    print('shouldnt run')
     graph = load_graph(model_file)
     t = read_tensor_from_image_file(file_name,
                                     input_height=input_height,
@@ -152,6 +152,7 @@ if __name__ == "__main__":
       print(labels[i], results[i])
       res[labels[i]] = results[i]
     json_ret[file_name] = res
+
   else:
     jsonDict = []
     fname = []
@@ -196,8 +197,9 @@ if __name__ == "__main__":
         json_ret[f] = res
         jsonDict.append(json_ret)
         fname.append(f)
-  df = pd.DataFrame({"file_name": fname, "total": total, 'partial': partial, 'none': none})
-  df.to_csv("./eclipseClassif.csv")
+  if multiple_images:
+    df = pd.DataFrame({"file_name": fname, "total": total, 'partial': partial, 'none': none})
+    df.to_csv("./eclipseClassif.csv")
 
 
 
