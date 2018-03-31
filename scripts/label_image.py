@@ -157,7 +157,6 @@ if __name__ == "__main__":
     top_k = results.argsort()[-5:][::-1]
     labels = load_labels(label_file)
 
-    print('\nEvaluation time (1-image): {:.3f}s\n'.format(end-start))
     json_ret = {}
     res = {}
     for i in top_k:
@@ -178,7 +177,8 @@ if __name__ == "__main__":
                                         input_height=input_height,
                                         input_width=input_width,
                                         input_mean=input_mean,
-                                        input_std=input_std)
+                                        input_std=input_std,
+                                        r = isURL)
 
         input_name = "import/" + input_layer
         output_name = "import/" + output_layer
